@@ -1,0 +1,326 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+        <head>
+                <title>Example</title>
+                <meta http-equiv="content-type" content="text/html;charset=utf-8" />    
+                 <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js'></script>
+                 <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js'></script>
+                 <!-- <script type='text/javascript' src='../js/jquery.ui.touch-punch.min.js'></script> -->
+                 <script type='text/javascript' src='js/jquery.jsPlumb-1.4.1-all-min.js'></script>
+                
+                <style type='text/css'>
+                    .item {
+                      border: 1px solid black;
+                      background-color: #ddddff;
+                      width: 100px;
+                      height: 100px;
+                    }
+                     .window {
+                        background-color: #eee4fe;
+                        border: 3px solid #346789;
+                        color: black;
+                        font-family: helvetica;
+                        font-size: 0.8em;
+                        height: 12em;
+                        opacity: 0.8;
+                        padding: 0.5em;
+                        position: absolute;
+                        width: 14em;
+                        z-index: 50;
+                        text-align:center;  
+                        }  
+                        
+                     .dragActive {
+                        border: 3px solid #346789;
+                    }
+                    
+                    #state1 {
+                      left: 100px;
+                      top: 100px;
+                    }
+                          
+                    #state2 {
+                      left: 250px;
+                      top: 100px;
+                    }
+                          
+                    #state3 {
+                      left: 100px;
+                      top: 250px;
+                    }
+                </style>
+        </head>
+        <body >
+                <!-- <div class="node" id="block1" style="position: absolute;">Block1</div>
+                //<div class="node" id="block2" style="position: absolute;">Block2</div> -->
+                
+                <div class="window" id="system" style="position: absolute;">System</div>    
+                <div class="window" id="appinst1" style="position: absolute;">App Instance 1</div>
+                <div class="window" id="appinst2" style="position: absolute;">App Instance 2</div>
+                <div class="window" id="dbinst" style="position: absolute;">DB Instance</div>
+                <div class="window" id="apphost" style="position: absolute;">App Host</div>    
+                <div class="window" id="dbhost" style="position: absolute;">DB Host</div>     
+                
+                <script type="text/javascript">
+                
+                /*var targetOption = {anchor:"TopCenter",
+                                                    maxConnections:-1, 
+                                                    isSource:false, 
+                                                    isTarget:true, 
+                                                    endpoint:["Dot", {radius:5}], 
+                                                    paintStyle:{fillStyle:"#66FF00"},
+                                                        setDragAllowedWhenFull:true}
+                                                        
+                var sourceOption = {anchor:"BottomCenter",
+                                                        maxConnections:-1, 
+                                                    isSource:true, 
+                                                    isTarget:false, 
+                                                    endpoint:["Dot", {radius:5}], 
+                                                    paintStyle:{fillStyle:"#FF0000"},
+                                                        setDragAllowedWhenFull:true} */
+                var a = $("#a");
+                var b = $("#b");
+                
+                //Setting up drop options
+                var targetDropOptions = {
+                        tolerance:'touch',
+                        hoverClass:'dropHover',
+                        activeClass:'dragActive'
+                };
+                
+                //Setting up a Target endPoint
+                var targetColor = "#316b31";
+                var targetEndpoint = {
+                   endpoint:["Dot", { radius:8 }],
+                   paintStyle:{ fillStyle:targetColor},
+                   //isSource:true,
+                   scope:"green dot",
+                   connectorStyle:{ strokeStyle:targetColor, lineWidth:8 },
+                   connector: ["Bezier", { curviness:63 } ],
+                   maxConnections:3,
+                   isTarget:true,
+                   dropOptions : targetDropOptions
+                };
+                
+                //Setting up a Source endPoint
+                var sourceColor = "#ff9696";
+                var sourceEndpoint = {
+                   endpoint:["Dot", { radius:8 }],
+                   paintStyle:{ fillStyle:sourceColor},
+                   isSource:true,
+                   scope:"green dot",
+                   connectorStyle:{ strokeStyle:sourceColor, lineWidth:8 },
+                   connector: ["Bezier", { curviness:63 } ],
+                   maxConnections:3,
+                   //isTarget:true,
+                   //dropOptions : targetDropOptions
+                };
+                
+                jsPlumb.ready(function() {
+                        
+                        //jsPlumb.addEndpoint('block1', targetOption);
+                        //jsPlumb.addEndpoint('block1', sourceOption);
+                        
+                        //jsPlumb.addEndpoint('block2', targetOption);
+                        //jsPlumb.addEndpoint('block2', sourceOption);
+                        
+
+                        jsPlumb.addEndpoint($(".window") , { anchor:"TopCenter" }, targetEndpoint);
+                        jsPlumb.addEndpoint($(".window") , { anchor:"BottomCenter" }, sourceEndpoint);
+                        
+                        //jsPlumb.draggable('block1');
+                        //jsPlumb.draggable('block2');
+                        jsPlumb.draggable($(".window"));
+                        
+                        jsPlumb.connect({
+                              source:'appinst1',
+                              target:'system',
+                              //paintStyle:{lineWidth:8, strokeStyle:'rgb(189,11,11    )'},
+                              anchors:["Top", "Bottom"],
+                              endpoint:"Rectangle",
+                              overlays: [
+                                ["Label", {                                                                     
+                                    cssClass:"l1 component label",
+                                    //label : "Connection One", 
+                                    location:0.7,
+                                    id:"label",
+                                    events:{
+                                        "click":function(label, evt) {
+                                            alert("clicked on label for connection " + label.component.id);
+                                        }
+                                    }
+                                }],
+                                ["Arrow", {
+                                    cssClass:"l1arrow",
+                                    location:0.5, width:20,length:20,
+                                    events:{
+                                        "click":function(arrow, evt) {
+                                            alert("clicked on arrow for connection " + arrow.component.id);
+                                        }
+                                    }
+                                }]
+                            ]
+                        });
+                        
+                        jsPlumb.connect({
+                              source:'appinst2',
+                              target:'system',
+                              //paintStyle:{lineWidth:8, strokeStyle:'rgb(189,11,11    )'},
+                              anchors:["Top", "Bottom"],
+                              endpoint:"Rectangle",
+                              overlays: [
+                                ["Label", {                                                                     
+                                    cssClass:"l1 component label",
+                                    //label : "Connection One", 
+                                    location:0.7,
+                                    id:"label",
+                                    events:{
+                                        "click":function(label, evt) {
+                                            alert("clicked on label for connection " + label.component.id);
+                                        }
+                                    }
+                                }],
+                                ["Arrow", {
+                                    cssClass:"l1arrow",
+                                    location:0.5, width:20,length:20,
+                                    events:{
+                                        "click":function(arrow, evt) {
+                                            alert("clicked on arrow for connection " + arrow.component.id);
+                                        }
+                                    }
+                                }]
+                            ]
+                        });
+                        
+                        jsPlumb.connect({
+                              source:'dbinst',
+                              target:'system',
+                              //paintStyle:{lineWidth:8, strokeStyle:'rgb(189,11,11    )'},
+                              anchors:["Top", "Bottom"],
+                              endpoint:"Rectangle",
+                              overlays: [
+                                ["Label", {                                                                     
+                                    cssClass:"l1 component label",
+                                    //label : "Connection One", 
+                                    location:0.7,
+                                    id:"label",
+                                    events:{
+                                        "click":function(label, evt) {
+                                            alert("clicked on label for connection " + label.component.id);
+                                        }
+                                    }
+                                }],
+                                ["Arrow", {
+                                    cssClass:"l1arrow",
+                                    location:0.5, width:20,length:20,
+                                    events:{
+                                        "click":function(arrow, evt) {
+                                            alert("clicked on arrow for connection " + arrow.component.id);
+                                        }
+                                    }
+                                }]
+                            ]
+                        });
+                        
+                        jsPlumb.connect({
+                              source:'apphost',
+                              target:'appinst1',
+                              //paintStyle:{lineWidth:8, strokeStyle:'rgb(189,11,11    )'},
+                              anchors:["Top", "Bottom"],
+                              endpoint:"Rectangle",
+                              overlays: [
+                                ["Label", {                                                                     
+                                    cssClass:"l1 component label",
+                                    //label : "Connection One", 
+                                    location:0.7,
+                                    id:"label",
+                                    events:{
+                                        "click":function(label, evt) {
+                                            alert("clicked on label for connection " + label.component.id);
+                                        }
+                                    }
+                                }],
+                                ["Arrow", {
+                                    cssClass:"l1arrow",
+                                    location:0.5, width:20,length:20,
+                                    events:{
+                                        "click":function(arrow, evt) {
+                                            alert("clicked on arrow for connection " + arrow.component.id);
+                                        }
+                                    }
+                                }]
+                            ]
+                        });
+                        
+                        jsPlumb.connect({
+                              source:'apphost',
+                              target:'appinst2',
+                              //paintStyle:{lineWidth:8, strokeStyle:'rgb(189,11,11    )'},
+                              anchors:["Top", "Bottom"],
+                              endpoint:"Rectangle",
+                              overlays: [
+                                ["Label", {                                                                     
+                                    cssClass:"l1 component label",
+                                    //label : "Connection One", 
+                                    location:0.7,
+                                    id:"label",
+                                    events:{
+                                        "click":function(label, evt) {
+                                            alert("clicked on label for connection " + label.component.id);
+                                        }
+                                    }
+                                }],
+                                ["Arrow", {
+                                    cssClass:"l1arrow",
+                                    location:0.5, width:20,length:20,
+                                    events:{
+                                        "click":function(arrow, evt) {
+                                            alert("clicked on arrow for connection " + arrow.component.id);
+                                        }
+                                    }
+                                }]
+                            ]
+                        });
+                        
+                        jsPlumb.connect({
+                              source:'dbhost',
+                              target:'dbinst',
+                              //paintStyle:{lineWidth:8, strokeStyle:'rgb(189,11,11    )'},
+                              anchors:["Top", "Bottom"],
+                              endpoint:"Rectangle",
+                              overlays: [
+                                ["Label", {                                                                     
+                                    cssClass:"l1 component label",
+                                    //label : "Connection One", 
+                                    location:0.7,
+                                    id:"label",
+                                    events:{
+                                        "click":function(label, evt) {
+                                            alert("clicked on label for connection " + label.component.id);
+                                        }
+                                    }
+                                }],
+                                ["Arrow", {
+                                    cssClass:"l1arrow",
+                                    location:0.5, width:20,length:20,
+                                    events:{
+                                        "click":function(arrow, evt) {
+                                            alert("clicked on arrow for connection " + arrow.component.id);
+                                        }
+                                    }
+                                }]
+                            ]
+                        });
+                        
+                        var pos = $('system').position();
+                        var top = pos.top;
+                        var left = pos.left;
+                        console.log(top, left);
+                        //jsPlumb.draggable($(".item"));
+                });
+                
+                </script>
+
+        </body>
+</html>
